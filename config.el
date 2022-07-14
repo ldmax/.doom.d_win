@@ -46,7 +46,7 @@
 (setq org-roam-directory (file-truename "~/org-roam"))
 
 ;; instruct emacs to always resolve symlinks at a performance cost
-;; (setq find-file-visit-truename t)
+(setq find-file-visit-truename t)
 
 ;; to ensure org-mode is available on start-up
 (org-roam-db-autosync-mode)
@@ -103,13 +103,31 @@
 (global-set-key (kbd "C-x 2") 'switch-window-then-split-below)
 (global-set-key (kbd "C-x 3") 'switch-window-then-split-right)
 (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
-
 (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
 (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
 (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
 (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
-
 (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
 (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
-
 (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
+
+
+;; org-roam-ui
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t)
+    (setq org-roam-mode-sections
+        '((org-roam-backlinks-section :unique t)
+         org-roam-reflinks-section))
+)

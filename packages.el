@@ -52,5 +52,13 @@
 ;; impatient mode
 (package! impatient-mode)
 (package! org-roam)
+
+;; org-roam-ui
+(unpin! org-roam)
 (package! org-roam-ui)
+
+;; switch-window
 (package! switch-window)
+(package! beacon)
+(package! emacsql)
+(package! emacsql-sqlite)
