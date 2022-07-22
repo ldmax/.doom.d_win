@@ -62,3 +62,4 @@
 (package! beacon)
 (package! emacsql)
 (package! emacsql-sqlite)
+
