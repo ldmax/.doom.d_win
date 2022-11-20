@@ -112,6 +112,13 @@
 (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
 
 
+;; use beacon-mode on start up
+(use-package! beacon
+  :config
+  (beacon-mode 1)
+)
+
+
 ;; org-roam-ui
 (use-package! websocket
     :after org-roam)
@@ -133,7 +140,83 @@
 )
 
 
-;; python interpreter path
-(add-hook! python-mode
-  (setq python-shell-interpreter "C:/Users/M310131/Software/Anaconda/python")
-  (setq python-indent-offset 4))
+;; lsp configurations
+(defun efs/lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
+(use-package! lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook (lsp-mode . efs/lsp-mode-setup)
+  :init
+  (setq lsp-keymap-prefix "C-c l")  ;; or 'C-l', 's-l'
+  :config
+  (lsp-enable-which-key-integration t))
+
+;; lsp-ui setup
+(use-package! lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+;; lsp-treemacs setup
+(use-package! lsp-treemacs
+  :after lsp)
+
+;; lsp-ivy setup
+(use-package! lsp-ivy)
+
+;; debugging with dap-mode
+(use-package! dap-mode
+  ;; uncomment the config below if you want all UI panes
+  ;; to be hidden by default
+  ;; :custom
+  ;; (lsp-enable-dap-auto-configure nil)
+  :after lsp-mode
+  :commands dap-debug
+  :hook ((python-mode . dap-ui-mode) (python-mode .dap-mode))
+  :config
+  ;; set up node debugging
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy)
+
+  ;; bind `C-c l d` to `dap-hydra` for easy access
+  (general-define-key
+   :keymaps 'lsp-mode-map
+   :prefix lsp-keymap-prefix
+   "d" '(dap-hydra t :wk "debugger")))
+
+;; python ide
+(use-package! python-mode
+  :ensure t
+  :hook (python-mode . lsp-deferred)
+  :custom
+  ;; NOTE: set these if python 3 is called "python3" on your system
+  ;; (python-shell-interpreter "python3")
+  ;;(dap-python-executable "f:python396/python")
+  (python-shell-interpreter "f:python396/Scripts/ipython")
+  (setq dap-auto-configure-mode t)
+  ;;(dap-python-debugger 'debugpy)
+  :config
+  (require 'dap-python))
+
+;; virtualenv
+(use-package! pyvenv
+  :config
+  (pyvenv-mode 1))
+
+;; set pylsp.exe path
+(setq lsp-pylsp-server-command "f:/python396/Scripts/pylsp")
+
+;;; On Windows, commands run by flycheck may have CRs (\r\n line endings).
+;;; Strip them out before parsing.
+(defun flycheck-parse-output (output checker buffer)
+  "Parse OUTPUT from CHECKER in BUFFER.
+
+OUTPUT is a string with the output from the checker symbol
+CHECKER.  BUFFER is the buffer which was checked.
+
+Return the errors parsed with the error patterns of CHECKER."
+  (let ((sanitized-output (replace-regexp-in-string "\r" "" output))
+        )
+    (funcall (flycheck-checker-get checker 'error-parser) sanitized-output checker buffer)))

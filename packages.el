@@ -49,6 +49,9 @@
 ;(unpin! t)
 
 
+(package! emacsql)
+(package! emacsql-sqlite)
+
 ;; impatient mode
 (package! impatient-mode)
 (package! org-roam)
@@ -60,6 +63,9 @@
 ;; switch-window
 (package! switch-window)
 (package! beacon)
-(package! emacsql)
-(package! emacsql-sqlite)
 
+;; lsp related packages
+(package! lsp-ivy)
+
+;; for debugging
+(package! dap-mode)
